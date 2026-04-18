@@ -36,6 +36,7 @@
       Mvvm;
     </UnoFeatures>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\EroMangaManager\EroMangaManager.Core\EroMangaManager.Core.csproj" />
   </ItemGroup>

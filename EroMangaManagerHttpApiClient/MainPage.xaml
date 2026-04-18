@@ -2,29 +2,31 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:EroMangaManagerHttpApiClient"
-      xmlns:model="using:EroMangaManager.Core.Models"
-      xmlns:viewmodel="using:EroMangaManager.Core.ViewModels"
+      xmlns:dto="using:EroMangaManager.Core.DTOs"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
         <NavigationView x:Name="navigationview" ItemInvoked="navigationview_ItemInvoked">
         <NavigationView.MenuItemTemplate>
-            <DataTemplate x:DataType="viewmodel:MangasGroup">
-                <NavigationViewItem Content="{x:Bind  FolderPath}"/>
+            <DataTemplate x:DataType="dto:MangasGroupDTO">
+                <NavigationViewItem Content="{x:Bind   Name}" DataContext="{x:Bind }"/>
             </DataTemplate>
         </NavigationView.MenuItemTemplate>
         <NavigationView.Content>
-            <GridView x:Name="gridview" IsItemClickEnabled="True" ItemClick="gridview_ItemClick">
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="model:Manga">
-                        <Grid Width="150" Height="210" Margin="10" >
-                            <Grid.RowDefinitions>
+            <GridView x:Name="gridview"  IsItemClickEnabled="True"   ItemClick="gridview_ItemClick">
+                <GridView.ItemContainerStyle>
+                    <Style  TargetType="GridViewItem" >
+                        <Setter Property="Width" Value="150"/>
+                        <Setter Property="Height" Value="300"/>
+                    </Style>
 
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <Image Loaded="Image_Loaded" Width="150" Height="200"  Stretch="Fill" Grid.Row="0"/>
-                            <TextBlock Text="{x:Bind MangaName}" TextWrapping="Wrap" Margin="0,5,0,0" Grid.Row="1"/>
-                        </Grid>
+
+                </GridView.ItemContainerStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:MangaDTO" >
+                        <StackPanel  Margin="10" >
+                            <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,5,0,0" Grid.Row="1"/>
+                            <Image Source="{x:Bind CoverUri }"   DataContext="{x:Bind}"  Stretch="Fill" Grid.Row="0"/>
+</StackPanel>
                     </DataTemplate>
                 </GridView.ItemTemplate>
             </GridView>

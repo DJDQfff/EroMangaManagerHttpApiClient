@@ -1,6 +1,8 @@
 
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net.Http.Json;
+using EroMangaManager.Core.DTOs;
 using EroMangaManager.Core.Models;
 using EroMangaManager.Core.ViewModels;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -10,6 +12,7 @@ namespace EroMangaManagerHttpApiClient;
 public sealed partial class MainPage : Page
 {
     HttpClient client;
+    ObservableCollection<MangasGroupDTO> groups;
     public MainPage()
     {
         this.InitializeComponent();
@@ -21,34 +24,45 @@ public sealed partial class MainPage : Page
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        var folders=await client.GetFromJsonAsync<List<MangasGroup>>("/folders")    ;
-        navigationview.MenuItemsSource = folders;
+        var folders=await client.GetFromJsonAsync<IEnumerable<MangasGroupDTO>>("/folders")    ;
+        groups = new ObservableCollection<MangasGroupDTO>(folders);
+        navigationview.MenuItemsSource = groups;
 
-        var mangaList = await client.GetFromJsonAsync<List<Manga>>("/mangas");
-       System.Diagnostics.Debug.WriteLine(mangaList.Select(x=>x.Guid).ToList());
-        gridview.ItemsSource = mangaList;
+       // var mangaList = await client.GetFromJsonAsync<ObservableCollection<MangaDTO>>("/mangas");
+       //System.Diagnostics.Debug.WriteLine(mangaList.Select(x=>x.Guid).ToList());
+       // gridview.ItemsSource = mangaList;
     }
 
+    private void navigationview_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+        var item=args.InvokedItemContainer.DataContext as MangasGroupDTO;
+        if (item != null)
+        {
+            gridview.ItemsSource = item.MangaDTOs;
+        }
+    }
 
 
     private void Image_Loaded(object sender, RoutedEventArgs e)
     {
         var image = sender as Image;
-        var manga = image.DataContext as Manga;
+        var manga = image.DataContext as MangaDTO;
         var uri = new System.Uri($"{client.BaseAddress}covers/{manga.Guid}");
         image.Source = new BitmapImage(uri);
     }
 
-    private void navigationview_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-    {
 
-    }
+
+
+
+
+
 
     private async void gridview_ItemClick(object sender, ItemClickEventArgs e)
     {
-        var manga = e.ClickedItem as Manga;
+        var manga = e.ClickedItem as MangaDTO;
         var file = await client.GetStreamAsync($"/downloads/{manga.Guid}");
-        var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.FileDisplayName}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+        var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.Name}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
         using (var stream = await storagefile.OpenStreamForWriteAsync())
         {
             await file.CopyToAsync(stream);
@@ -83,5 +97,6 @@ public sealed partial class MainPage : Page
         // 5. 启动
         Android.App.Application.Context.StartActivity(intent);
 #endif
+
     }
 }

@@ -7,4 +7,7 @@
   -->
   <ItemGroup>
   </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Uno.CommunityToolkit.WinUI.UI.Controls" Version="7.1.205" />
+  </ItemGroup>
 </Project>
