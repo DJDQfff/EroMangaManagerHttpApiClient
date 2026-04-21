@@ -18,6 +18,9 @@ public class MainActivity : Microsoft.UI.Xaml.ApplicationActivity
         global::AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
 
         base.OnCreate(savedInstanceState);
+        // 强制使用安卓原生 HTTP 客户端（比 .NET 托管版快 5~10 倍）
+        //System.Environment.SetEnvironmentVariable("DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_ENABLE", "false");
+
     }
 
 }

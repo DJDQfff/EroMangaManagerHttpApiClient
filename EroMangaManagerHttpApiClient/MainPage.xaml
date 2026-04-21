@@ -26,12 +26,15 @@
                 </GridView.ItemContainerStyle>
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="dto:MangaDTO" >
-                        <StackPanel   >
+                        <Grid>
+                                                    <StackPanel    >
                             <ProgressBar Height="8" x:Name="progressbar" Visibility="Collapsed" Maximum="100" />
 
                             <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,5,0,0" />
                             <Image Source="{x:Bind CoverUri }"   DataContext="{x:Bind}"  Stretch="Uniform" />
 </StackPanel>
+                            <ProgressRing Visibility="Collapsed" x:Name="progressring" />
+                        </Grid>
                     </DataTemplate>
                 </GridView.ItemTemplate>
             </GridView>

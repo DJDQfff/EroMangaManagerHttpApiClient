@@ -64,19 +64,31 @@ public sealed partial class MainPage : Page
 
         var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.Guid}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
 
+
+
+        // 直接下载到文件
+        var file = await client.GetStreamAsync($"/downloads/{manga.Guid}");
+        var progressring = container?.FindFirstDescendant<ProgressRing>();
+       progressring.Visibility= Visibility.Visible;
+        
+        using (var stream = await storagefile.OpenStreamForWriteAsync())
+        {
+            await file.CopyToAsync(stream);
+        }
+        progressring.Visibility = Visibility.Collapsed;
+        AndroidOperation.Open(storagefile);
+
+        return;
+        //TODO 下面可以显示下载进度，但安卓端有问题，暂时先直接下载后打开
+        // 1.下载速度跑不满
+        //2. progress.Report()调用会影响下载速度。，即便不使用progress.Report()，下载速度也只有2M多，怀疑是因为每次读写都要调用UI线程的关系。
+        // 3.频繁调用性能网速更低，怀疑是因为每次读写都要调用UI线程的关系。
+
         // 此方法在安卓端错误
         //var root = container.ContentTemplateRootas StackPanel;
         //var progressbar = root?.FindName("progressbar") as ProgressBar;
 
         var progressbar = container?.FindFirstDescendant<ProgressBar>();
-
-        // 直接下载到文件
-        //var file = await client.GetStreamAsync($"/downloads/{manga.Guid}");
-        //using (var stream = await storagefile.OpenStreamForWriteAsync())
-        //{
-        //    await file.CopyToAsync(stream);
-        //}
-        var count = 0;
 
         IProgress<float> progress = new Progress<float>(value =>
         {
@@ -107,28 +119,29 @@ public sealed partial class MainPage : Page
         }
 
 
-        using (var stream = await response.Content.ReadAsStreamAsync())
+        using var networkstream = await response.Content.ReadAsStreamAsync();
         using (var fileStream = await storagefile.OpenStreamForWriteAsync())
         {
             var buffer = new byte[1048576]; // 64KB 缓冲区，提高下载速度。可选 1048576  65536
             long bytesRead = 0;
             int read;
 
-            while ((read = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            while ((read = await networkstream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
                 await fileStream.WriteAsync(buffer, 0, read);
+
                 bytesRead += read;
 
                 // 3. 报告进度 (如果是 null 则跳过)
-                if (estimatedSize > 0 && progress != null)
-                {
-                    // 计算百分比，这是默认progressbar是最大100的时候，不用了
-                    //float percent =  (float)bytesRead / totalBytes.Value*100; 
+                //if (estimatedSize > 0 && progress != null)
+                //{
+                //    // 计算百分比，这是默认progressbar是最大100的时候，不用了
+                //    //float percent =  (float)bytesRead / totalBytes.Value*100; 
 
-                    progress.Report(bytesRead);
-                }
+                //    progress.Report(bytesRead);
+                //}
             }
-            progress.Report(estimatedSize); // 确保最后报告完成
+            //progress.Report(estimatedSize); // 确保最后报告完成
 
         }
 
