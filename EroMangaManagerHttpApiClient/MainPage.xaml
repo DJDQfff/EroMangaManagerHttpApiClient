@@ -11,6 +11,9 @@
                 <NavigationViewItem Content="{x:Bind   Name}" DataContext="{x:Bind }"/>
             </DataTemplate>
         </NavigationView.MenuItemTemplate>
+        <NavigationView.PaneFooter>
+            <ProgressBar x:Name="footerprogressbar" Visibility="Visible" IsIndeterminate="True"  />
+        </NavigationView.PaneFooter>
         <NavigationView.Content>
             <GridView x:Name="gridview"  IsItemClickEnabled="True"   ItemClick="gridview_ItemClick">
                 <GridView.ItemContainerStyle>
@@ -23,9 +26,11 @@
                 </GridView.ItemContainerStyle>
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="dto:MangaDTO" >
-                        <StackPanel  Margin="10" >
-                            <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,5,0,0" Grid.Row="1"/>
-                            <Image Source="{x:Bind CoverUri }"   DataContext="{x:Bind}"  Stretch="Fill" Grid.Row="0"/>
+                        <StackPanel   >
+                            <ProgressBar Height="8" x:Name="progressbar" Visibility="Collapsed" Maximum="100" />
+
+                            <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Margin="0,5,0,0" />
+                            <Image Source="{x:Bind CoverUri }"   DataContext="{x:Bind}"  Stretch="Uniform" />
 </StackPanel>
                     </DataTemplate>
                 </GridView.ItemTemplate>
