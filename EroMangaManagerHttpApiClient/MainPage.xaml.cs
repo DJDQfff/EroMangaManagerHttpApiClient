@@ -87,16 +87,30 @@ public sealed partial class MainPage : Page
         // 1. 先获取响应头，不要直接读内容流
         var response = await client.GetAsync($"/downloads/{manga.Guid}", HttpCompletionOption.ResponseHeadersRead);
         response.EnsureSuccessStatusCode();
-        progressbar.Visibility = Visibility.Visible;
 
-        // 2. 获取总大小
-        var totalBytes = response.Content.Headers.ContentLength;
-        progressbar.Maximum = (double)totalBytes;
+        // 2. 获取总/近似大小(文件夹则按近似大小，单文件则按实际大小)，以之为进度条最大值。
+        long estimatedSize = 0;
+        if (response.Content.Headers.ContentLength.HasValue)
+        {
+            estimatedSize = response.Content.Headers.ContentLength.Value;
+        }
+        else if (response.Headers.TryGetValues("X-Estimated-Size", out var values))
+        {
+            estimatedSize = long.Parse(values.FirstOrDefault());
+        }
+       // 若大小为0，则不启用进度条
+        if (estimatedSize != 0)
+        {
+            progressbar.Visibility = Visibility.Visible;
+            progressbar.Maximum = (double)estimatedSize;
+
+        }
+
 
         using (var stream = await response.Content.ReadAsStreamAsync())
         using (var fileStream = await storagefile.OpenStreamForWriteAsync())
         {
-            var buffer = new byte[65536]; // 64KB 缓冲区，提高下载速度。可选1048576
+            var buffer = new byte[1048576]; // 64KB 缓冲区，提高下载速度。可选 1048576  65536
             long bytesRead = 0;
             int read;
 
@@ -106,12 +120,16 @@ public sealed partial class MainPage : Page
                 bytesRead += read;
 
                 // 3. 报告进度 (如果是 null 则跳过)
-                if (totalBytes.HasValue && progress != null)
+                if (estimatedSize > 0 && progress != null)
                 {
-                    //float percent =  (float)bytesRead / totalBytes.Value*100; // 计算百分比，这是默认progressbar是最大100的时候，不用了
+                    // 计算百分比，这是默认progressbar是最大100的时候，不用了
+                    //float percent =  (float)bytesRead / totalBytes.Value*100; 
+
                     progress.Report(bytesRead);
                 }
             }
+            progress.Report(estimatedSize); // 确保最后报告完成
+
         }
 
         AndroidOperation.Open(storagefile);
