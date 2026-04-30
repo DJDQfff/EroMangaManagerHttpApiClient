@@ -11,12 +11,13 @@ public sealed partial class MainPage : Page
 {
     HttpClient client;
     ObservableCollection<MangasGroupDTO> groups;
+    int currentpageindex;
     public MainPage()
     {
         this.InitializeComponent();
         client = new HttpClient
         {
-            BaseAddress = new Uri("http://192.168.1.3:5000/")
+            BaseAddress = new Uri("http://192.168.1.2:5000/")
         };
     }
     protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -25,34 +26,10 @@ public sealed partial class MainPage : Page
         var folders = await client.GetFromJsonAsync<IEnumerable<MangasGroupDTO>>("/folders");
         groups = new ObservableCollection<MangasGroupDTO>(folders);
         navigationview.MenuItemsSource = groups;
-
         // var mangaList = await client.GetFromJsonAsync<ObservableCollection<MangaDTO>>("/mangas");
         //System.Diagnostics.Debug.WriteLine(mangaList.Select(x=>x.Guid).ToList());
         // gridview.ItemsSource = mangaList;
     }
-
-    private void navigationview_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-    {
-        var item = args.InvokedItemContainer.DataContext as MangasGroupDTO;
-        if (item != null)
-        {
-            gridview.ItemsSource = item.MangaDTOs;
-        }
-    }
-
-
-    private void Image_Loaded(object sender, RoutedEventArgs e)
-    {
-        var image = sender as Image;
-        var manga = image.DataContext as MangaDTO;
-        var uri = new System.Uri($"{client.BaseAddress}covers/{manga.Guid}");
-        image.Source = new BitmapImage(uri);
-    }
-
-
-
-
-
 
 
 
@@ -62,15 +39,15 @@ public sealed partial class MainPage : Page
         var manga = e.ClickedItem as MangaDTO;
         var container = gridview.ContainerFromItem(manga) as GridViewItem;
 
-        var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.Guid}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
+        var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.Name}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
 
 
 
         // 直接下载到文件
         var file = await client.GetStreamAsync($"/downloads/{manga.Guid}");
         var progressring = container?.FindFirstDescendant<ProgressRing>();
-       progressring.Visibility= Visibility.Visible;
-        
+        progressring.Visibility = Visibility.Visible;
+
         using (var stream = await storagefile.OpenStreamForWriteAsync())
         {
             await file.CopyToAsync(stream);
@@ -110,7 +87,7 @@ public sealed partial class MainPage : Page
         {
             estimatedSize = long.Parse(values.FirstOrDefault());
         }
-       // 若大小为0，则不启用进度条
+        // 若大小为0，则不启用进度条
         if (estimatedSize != 0)
         {
             progressbar.Visibility = Visibility.Visible;
@@ -147,5 +124,53 @@ public sealed partial class MainPage : Page
 
         AndroidOperation.Open(storagefile);
 
+    }
+
+    private async void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+    {
+        var menuItem = sender as MenuFlyoutItem;
+
+        var manga = menuItem.DataContext as MangaDTO;
+        var group = navigationview.SelectedItem as MangasGroupDTO;
+        if (group != null)
+        {
+            group.MangaDTOs.Remove(manga);
+            numberbox.Maximum = (group.MangaDTOs.Count + 19) / 20;
+
+        }
+        var response = await client.DeleteAsync($"/mangas/{manga.Guid}");
+        response.EnsureSuccessStatusCode();
+
+    }
+
+    private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+    {
+        var selectedGroup = navigationview.SelectedItem as MangasGroupDTO;
+        if (selectedGroup != null)
+        {
+            var current = (int)numberbox.Value;
+            var mangadtos = selectedGroup.MangaDTOs.Skip((current - 1) * 20).Take(20).ToList();
+            gridview.ItemsSource = mangadtos;
+        }
+    }
+
+
+
+    private void Image_Loaded(object sender, RoutedEventArgs e)
+    {
+        var image = sender as Image;
+        var manga = image.DataContext as MangaDTO;
+        var uri = new System.Uri($"{client.BaseAddress}covers/{manga.Guid}");
+        image.Source = new BitmapImage(uri);
+    }
+
+    private void navigationview_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+    {
+        var groups = navigationview.SelectedItem as MangasGroupDTO;
+       
+        numberbox.Maximum = (groups.MangaDTOs.Count + 19) / 20;
+        numberbox.Value = 1;
+        var mangadtos = groups.MangaDTOs.Take(20).ToList();
+        gridview.ItemsSource = mangadtos;
     }
 }

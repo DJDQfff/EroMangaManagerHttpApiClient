@@ -33,7 +33,7 @@
       https://aka.platform.uno/singleproject-features
     -->
     <UnoFeatures>
-      Mvvm;
+        Mvvm;Toolkit;
     </UnoFeatures>
   </PropertyGroup>
 
