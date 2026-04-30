@@ -11,7 +11,7 @@
         <MenuFlyout x:Key="menuflyout">
             <MenuFlyoutItem
                                             Click="MenuFlyoutItem_Click"
-                                            DataContext="{x:Bind}"
+                                            DataContext="{Binding}"
                
                                             Text="删除" />
         </MenuFlyout>
@@ -50,6 +50,7 @@
                 x:Name="gridview" Grid.Row="1"
                 IsItemClickEnabled="True"
                 ItemClick="gridview_ItemClick"
+                ItemsSource="{x:Bind mangas, Mode=OneWay}"
                 ScrollViewer.VerticalScrollBarVisibility="Visible">
                 <GridView.ItemContainerStyle>
                     <Style TargetType="GridViewItem">
@@ -63,7 +64,7 @@
                     <DataTemplate x:DataType="dto:MangaDTO">
                         <Grid>
                             <StackPanel Orientation="Vertical">
-                                <ProgressBar
+                                            <ProgressBar
                                     x:Name="progressbar"
                                     Height="8"
                                     Maximum="100"
@@ -71,7 +72,8 @@
 
                                 <Image
                                     DataContext="{x:Bind}"
-                                  Loaded="Image_Loaded" ContextFlyout="{StaticResource menuflyout}"
+                                    Source="{x:Bind CoverUri}"
+                                    ContextFlyout="{StaticResource menuflyout}"
                                     Stretch="Uniform" />
                                 <TextBlock
                                     Margin="0,5,0,0"
@@ -86,6 +88,7 @@
                                 Flyout="{StaticResource menuflyout}"
                                 ClickMode="Release">
                                     <SymbolIcon Symbol="More" />
+                                
                             </Button>
 
                             <ProgressRing
