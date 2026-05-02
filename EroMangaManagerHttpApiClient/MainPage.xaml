@@ -5,107 +5,139 @@
     xmlns:dto="using:EroMangaManager.Core.DTOs"
     xmlns:local="using:EroMangaManagerHttpApiClient"
     xmlns:utu="using:Uno.Toolkit.UI"
-    
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <MenuFlyout x:Key="menuflyout">
             <MenuFlyoutItem
-                                            Click="MenuFlyoutItem_Click"
-                                            DataContext="{Binding}"
-               
-                                            Text="删除" />
+                Click="MenuFlyoutItem_Click"
+                DataContext="{Binding}"
+                Text="删除" />
         </MenuFlyout>
 
     </Page.Resources>
-    <!-- 核心：让内容自动避开状态栏 -->
+    <!--  核心：让内容自动避开状态栏  -->
     <utu:SafeArea Insets="Top">
-            <Grid Background="Transparent">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-            <NavigationView x:Name="navigationview" Grid.Row="1" ItemInvoked="navigationview_ItemInvoked">
-        <NavigationView.MenuItemTemplate>
-            <DataTemplate x:DataType="dto:MangasGroupDTO">
-                <NavigationViewItem Content="{x:Bind Name}" DataContext="{x:Bind}" />
-            </DataTemplate>
-        </NavigationView.MenuItemTemplate>
-        <NavigationView.Content>
-            <Grid >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                            <CommandBar Grid.Row="0">
-                <CommandBar.PrimaryCommands>
-                    <AppBarElementContainer VerticalContentAlignment="Center" >
-                        <NumberBox  x:Name="numberbox" AcceptsExpression="False" Minimum="1" ValidationMode="InvalidInputOverwritten"  SmallChange="1" LargeChange="10" Grid.Column="1" SpinButtonPlacementMode="Inline" Value="1" HorizontalContentAlignment="Center" />
-
-                    </AppBarElementContainer>
-                    <AppBarButton Click="RefreshButton_Click" Icon="Refresh"/>
-
-                </CommandBar.PrimaryCommands>
-            </CommandBar>
-            <GridView
-                x:Name="gridview" Grid.Row="1"
-                IsItemClickEnabled="True"
-                ItemClick="gridview_ItemClick"
-                ItemsSource="{x:Bind mangas, Mode=OneWay}"
-                ScrollViewer.VerticalScrollBarVisibility="Visible">
-                <GridView.ItemContainerStyle>
-                    <Style TargetType="GridViewItem">
-                        <Setter Property="Width" Value="150" />
-                        <Setter Property="Height" Value="200" />
-                    </Style>
-
-
-                </GridView.ItemContainerStyle>
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="dto:MangaDTO">
-                        <Grid>
-                            <StackPanel Orientation="Vertical">
-                                            <ProgressBar
-                                    x:Name="progressbar"
-                                    Height="8"
-                                    Maximum="100"
-                                    Visibility="Collapsed" />
-
-                                <Image
-                                    DataContext="{x:Bind}"
-                                    Source="{x:Bind CoverUri}"
-                                    ContextFlyout="{StaticResource menuflyout}"
-                                    Stretch="Uniform" />
-                                <TextBlock
-                                    Margin="0,5,0,0"
-                                    Text="{x:Bind Name}"
-                                    TextWrapping="Wrap" />
-                            </StackPanel>
-
-                            <Button
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                DataContext="{x:Bind }"
-                                Flyout="{StaticResource menuflyout}"
-                                ClickMode="Release">
-                                    <SymbolIcon Symbol="More" />
-                                
-                            </Button>
-
-                            <ProgressRing
-                                x:Name="progressring"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Visibility="Collapsed" />
-                        </Grid>
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <NavigationView
+                x:Name="navigationview"
+                Grid.Row="1"
+                ItemInvoked="navigationview_ItemInvoked">
+                <NavigationView.MenuItemTemplate>
+                    <DataTemplate x:DataType="dto:MangasGroupDTO">
+                        <NavigationViewItem Content="{x:Bind Name}" DataContext="{x:Bind}" />
                     </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
+                </NavigationView.MenuItemTemplate>
+                <NavigationView.Content>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <CommandBar
+                            Grid.Row="0" OverflowButtonVisibility="Collapsed"
+                            VerticalAlignment="Center" >
+                            <CommandBar.PrimaryCommands>
+                                <AppBarElementContainer Visibility="Collapsed">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="auto" />
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <RepeatButton Content="加"/>
+                                    <ComboBox>
 
-            </Grid>
-        </NavigationView.Content>
-    </NavigationView>
 
-    </Grid>
+
+
+                                    </ComboBox>
+                                    <RepeatButton Content="减"/>
+                                    </Grid>
+                                </AppBarElementContainer>
+                                <AppBarElementContainer VerticalContentAlignment="Center">
+                                    <NumberBox
+                                        x:Name="numberbox"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalContentAlignment="Center"
+                                        AcceptsExpression="False"
+                                        LargeChange="10"
+                                        Minimum="1"
+                                        SmallChange="1"
+                                        SpinButtonPlacementMode="Inline"
+                                        ValidationMode="InvalidInputOverwritten"
+                                        Value="1" />
+
+                                </AppBarElementContainer>
+                                <AppBarButton Click="RefreshButton_Click" Icon="Refresh" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+                            </CommandBar.PrimaryCommands>
+                        </CommandBar>
+                        <GridView
+                            x:Name="gridview"
+                            Grid.Row="1"
+                            IsItemClickEnabled="True"
+                            ItemClick="gridview_ItemClick"
+                            ItemsSource="{x:Bind mangas, Mode=OneWay}"
+                            ScrollViewer.VerticalScrollBarVisibility="Visible">
+                            <GridView.ItemContainerStyle>
+                                <Style TargetType="GridViewItem">
+                                    <Setter Property="Width" Value="150" />
+                                    <Setter Property="Height" Value="200" />
+                                </Style>
+
+
+                            </GridView.ItemContainerStyle>
+                            <GridView.ItemTemplate>
+                                <DataTemplate x:DataType="dto:MangaDTO">
+                                    <Grid>
+                                        <StackPanel Orientation="Vertical">
+                                            <ProgressBar
+                                                x:Name="progressbar"
+                                                Height="8"
+                                                Maximum="100"
+                                                Visibility="Collapsed" />
+
+                                            <Image
+                                                ContextFlyout="{StaticResource menuflyout}"
+                                                DataContext="{x:Bind}"
+                                                Source="{x:Bind CoverUri}"
+                                                Stretch="Uniform" />
+                                            <TextBlock
+                                                Margin="0,5,0,0"
+                                                Text="{x:Bind Name}"
+                                                TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                        <Button
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            ClickMode="Release"
+                                            DataContext="{x:Bind}"
+                                            Flyout="{StaticResource menuflyout}">
+                                            <SymbolIcon Symbol="More" />
+
+                                        </Button>
+
+                                        <ProgressRing
+                                            x:Name="progressring"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            Visibility="Collapsed" />
+                                    </Grid>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+
+                    </Grid>
+                </NavigationView.Content>
+            </NavigationView>
+
+        </Grid>
 
     </utu:SafeArea>
 

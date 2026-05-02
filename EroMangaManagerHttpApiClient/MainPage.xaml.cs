@@ -17,6 +17,7 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         this.InitializeComponent();
+
     }
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
@@ -24,6 +25,7 @@ public sealed partial class MainPage : Page
         var folders = await client.GetGroupsBasicAsync();
         groups = new ObservableCollection<MangasGroupDTO>(folders);
         navigationview.MenuItemsSource = groups;
+        
     }
 
 
@@ -33,15 +35,15 @@ public sealed partial class MainPage : Page
 
         var manga = e.ClickedItem as MangaDTO;
         var container = gridview.ContainerFromItem(manga) as GridViewItem;
+        var progressring = container?.FindFirstDescendant<ProgressRing>();
+        progressring.Visibility = Visibility.Visible;
 
-        var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.Name}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
 
 
 
         // 直接下载到文件
         var file = await client.GetStreamAsync(manga.Guid);
-        var progressring = container?.FindFirstDescendant<ProgressRing>();
-        progressring.Visibility = Visibility.Visible;
+        var storagefile = await Windows.Storage.ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{manga.Name}.zip", Windows.Storage.CreationCollisionOption.ReplaceExisting);
 
         using (var stream = await storagefile.OpenStreamForWriteAsync())
         {
