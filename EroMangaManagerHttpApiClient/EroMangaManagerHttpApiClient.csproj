@@ -6,17 +6,16 @@
     <UnoSingleProject>true</UnoSingleProject>
 
     <!-- Display name -->
-    <ApplicationTitle>EroMangaManagerHttpApiClient</ApplicationTitle>
+    <ApplicationTitle>EroMangaBrowser</ApplicationTitle>
     <!-- App Identifier -->
-    <ApplicationId>com.companyname.EroMangaManagerHttpApiClient</ApplicationId>
+    <ApplicationId>djdqfff.EroMangaBrowser</ApplicationId>
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
     <!-- Package Publisher -->
-    <ApplicationPublisher>27431</ApplicationPublisher>
+    <ApplicationPublisher>djdqfff</ApplicationPublisher>
     <!-- Package Description -->
-    <Description>EroMangaManagerHttpApiClient powered by Uno Platform.</Description>
-    <!--
+      <Description>EroMangaBrowser, Local Network Browser For EroMangaManager. Powered by Uno Platform.</Description>    <!--
       If you encounter this error message:
 
         error NETSDK1148: A referenced assembly was compiled using a newer version of Microsoft.Windows.SDK.NET.dll.
@@ -35,24 +34,50 @@
     <UnoFeatures>
         Mvvm;Toolkit;
     </UnoFeatures>
-    <AndroidSigningKeyStore>E:\收藏\DJDQfff For MS Store.pfx</AndroidSigningKeyStore>
+    <AndroidSigningKeyStore>E:\收藏\DJDQfff For MS Store_new.pfx</AndroidSigningKeyStore>
+          <!-- 只保留 64 位和 32 位 ARM 架构 -->
+          <AndroidSupportedAbis>arm64-v8a;armeabi-v7a</AndroidSupportedAbis>
+     
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\EroMangaManager\EroMangaManager.Core\EroMangaManager.Core.csproj" />
   </ItemGroup>
 
-   <!-- 这个会导致发布失败-->
+
     <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(TargetFramework)' == 'net10.0-android'">
         <EnableLLVM>True</EnableLLVM>
 
         <AndroidKeyStore>True</AndroidKeyStore>
-        <AndroidSigningAlias>te-810e1cb9-b1a5-44bf-a4f7-362e4d8e5df9</AndroidSigningAlias>
+        <AndroidSigningAlias>djdqfff</AndroidSigningAlias>
         <AndroidSigningStorePass>512131415zcb</AndroidSigningStorePass>
         <AndroidSigningKeyPass>512131415zcb</AndroidSigningKeyPass>
-        <AndroidSigningKeyAlias>te-810e1cb9-b1a5-44bf-a4f7-362e4d8e5df9</AndroidSigningKeyAlias>
-
+        <AndroidSigningKeyAlias>djdqfff</AndroidSigningKeyAlias>
+        
+  <!-- Release 配置：关闭快速部署，禁用调试，确保可以存档发布 -->
+  <AndroidFastDeploymentType></AndroidFastDeploymentType>
+  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  <AndroidDebuggable>False</AndroidDebuggable>
     </PropertyGroup>
+
+
+    <ItemGroup>
+      <Page Update="ConnectPage.xaml">
+        <SubType>Designer</SubType>
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Page Update="NavigationPage.xaml">
+        <SubType>Designer</SubType>
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+    </ItemGroup>
+
+
+
 
     <!--    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
       <AndroidSigningKeyAlias>djdqfff</AndroidSigningKeyAlias>

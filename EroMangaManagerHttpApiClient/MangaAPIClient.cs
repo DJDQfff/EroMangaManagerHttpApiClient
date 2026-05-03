@@ -15,10 +15,33 @@ public class MangaAPIClient
     {
         client = new HttpClient
         {
-            BaseAddress = new Uri("http://192.168.2.108:5000/")
+            BaseAddress = new Uri("http://192.168.2.108:12965/")
         };
     }
-
+    // 新增：直接指定地址
+    public MangaAPIClient(string baseUrl) : this()
+    {
+        SetBaseAddress(baseUrl);
+    }
+    // 新增：修改地址
+    public void SetBaseAddress(string baseUrl)
+    {
+        if (!baseUrl.EndsWith("/"))
+            baseUrl += "/";
+        client.BaseAddress = new Uri(baseUrl);
+    }
+    public async Task<bool> CheckConnectionAsync()
+    {
+        try
+        {
+            var response = await client.GetAsync("/api/health");
+            return response.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
+    }
     public async Task<IEnumerable<MangasGroupDTO>> GetGroupsBasicAsync()
     {
         return await client.GetFromJsonAsync<IEnumerable<MangasGroupDTO>>("/folders/basicinfo");

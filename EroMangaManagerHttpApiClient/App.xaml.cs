@@ -1,4 +1,5 @@
 using System;
+using System.Security.Policy;
 using Microsoft.Extensions.Logging;
 using Uno.Resizetizer;
 
@@ -10,9 +11,11 @@ public partial class App : Application
     /// Initializes the singleton application object. This is the first line of authored code
     /// executed, and as such is the logical equivalent of main() or WinMain().
     /// </summary>
+    public static MangaAPIClient MangaClient { get; set; }
     public App()
     {
         this.InitializeComponent();
+
     }
 
     protected Window? MainWindow { get; private set; }
