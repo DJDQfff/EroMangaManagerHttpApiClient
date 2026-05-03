@@ -14,16 +14,18 @@ public sealed partial class MainPage : Page
     {
         this.InitializeComponent();
     }
-    override protected void OnNavigatedTo(NavigationEventArgs e)
+    override protected async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        if (App.MangaClient == null)
-        {
-            mainFrame.Navigate(typeof(ConnectPage));
+
+        if (await App.MangaClient.CheckConnectionAsync() )
+        {            mainFrame.Navigate(typeof(NavigationPage));
+
         }
         else
-        {
-            mainFrame.Navigate(typeof(NavigationPage));
+        {            mainFrame.Navigate(typeof(ConnectPage));
+
         }
     }
+
 }

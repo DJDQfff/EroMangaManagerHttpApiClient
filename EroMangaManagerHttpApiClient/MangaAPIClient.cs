@@ -18,17 +18,15 @@ public class MangaAPIClient
             BaseAddress = new Uri("http://192.168.2.108:12965/")
         };
     }
-    // 新增：直接指定地址
-    public MangaAPIClient(string baseUrl) : this()
-    {
-        SetBaseAddress(baseUrl);
-    }
-    // 新增：修改地址
-    public void SetBaseAddress(string baseUrl)
+
+    public MangaAPIClient(string baseUrl)
     {
         if (!baseUrl.EndsWith("/"))
             baseUrl += "/";
-        client.BaseAddress = new Uri(baseUrl);
+        client = new HttpClient
+        {
+            BaseAddress = new Uri(baseUrl)
+        };
     }
     public async Task<bool> CheckConnectionAsync()
     {

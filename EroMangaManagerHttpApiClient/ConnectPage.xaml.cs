@@ -21,11 +21,16 @@ namespace EroMangaManagerHttpApiClient
 
         private string GetServerUrl()
         {
-            string ip = $"192.168.{nbIP3.Value}.{nbIP4.Value}";
-            string port = nbPort.Value.ToString();
+            int ip3 = (int)Math.Round(nbIP3.Value);
+            int ip4 = (int)Math.Round(nbIP4.Value);
+
+            if (ip3 < 0 || ip3 > 255 || ip4 < 0 || ip4 > 255)
+                return string.Empty;
+
+            string ip = $"192.168.{ip3}.{ip4}";
+            string port = ((int)Math.Round(nbPort.Value)).ToString();
             return $"http://{ip}:{port}";
         }
-
         private void ParseUrlToUI(string url)
         {
             try
@@ -52,7 +57,7 @@ namespace EroMangaManagerHttpApiClient
             try
             {
                 var client = new MangaAPIClient(url);
-                var isConnected = await client.CheckConnectionAsync();
+                bool isConnected = await client.CheckConnectionAsync();
 
                 if (!isConnected)
                 {
@@ -62,8 +67,6 @@ namespace EroMangaManagerHttpApiClient
 
                 ServerStorage.SaveServer(url);
                 App.MangaClient = client;
-
-
                 Frame.Navigate(typeof(NavigationPage));
             }
             catch (HttpRequestException)

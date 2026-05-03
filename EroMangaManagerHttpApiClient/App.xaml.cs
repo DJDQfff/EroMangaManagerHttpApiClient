@@ -15,7 +15,8 @@ public partial class App : Application
     public App()
     {
         this.InitializeComponent();
-
+        string lastServer = ServerStorage.LoadLastServer() ?? "http://0.0.0.0:12965";
+        App.MangaClient = new MangaAPIClient(lastServer);
     }
 
     protected Window? MainWindow { get; private set; }
@@ -53,7 +54,6 @@ public partial class App : Application
         // Ensure the current window is active
         MainWindow.Activate();
     }
-
     /// <summary>
     /// Invoked when Navigation to a certain page fails
     /// </summary>
