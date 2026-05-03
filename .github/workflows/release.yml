@@ -25,10 +25,10 @@ jobs:
 
       - name: 克隆桌面端仓库（获取 Core 项目）
         run: |
-          git clone https://github.com/DJDQfff/EroMangaManager.git ../EroMangaManager
+          git clone https://github.com/DJDQfff/EroMangaManager.git ./EroMangaManager
 
       - name: 还原依赖
-        run: dotnet restore
+        run: dotnet restore EroMangaManagerHttpApiClient.slnx
 
       - name: 构建 Android APK
         run: |
