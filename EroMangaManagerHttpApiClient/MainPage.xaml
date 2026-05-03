@@ -7,12 +7,6 @@
     xmlns:utu="using:Uno.Toolkit.UI"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
-        <MenuFlyout x:Key="menuflyout">
-            <MenuFlyoutItem
-                Click="MenuFlyoutItem_Click"
-                DataContext="{Binding}"
-                Text="删除" />
-        </MenuFlyout>
 
     </Page.Resources>
     <!--  核心：让内容自动避开状态栏  -->
@@ -117,10 +111,17 @@
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
                                             ClickMode="Release"
-                                            DataContext="{x:Bind}"
-                                            Flyout="{StaticResource menuflyout}">
+                                            DataContext="{x:Bind}">
                                             <SymbolIcon Symbol="More" />
+                                            <Button.Flyout>
+                                                <MenuFlyout >
+                                                    <MenuFlyoutItem
+                Click="MenuFlyoutItem_Click"
+                DataContext="{x:Bind}"
+                Text="删除" />
+                                                </MenuFlyout>
 
+                                            </Button.Flyout>
                                         </Button>
 
                                         <ProgressRing

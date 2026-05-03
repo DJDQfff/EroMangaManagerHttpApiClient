@@ -125,12 +125,14 @@ public sealed partial class MainPage : Page
     private async void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
     {
         var menuItem = sender as MenuFlyoutItem;
+
+        var manga = menuItem.DataContext as MangaDTO;  
         var group = navigationview.SelectedItem as MangasGroupDTO;
 
-        var manga = menuItem.DataContext as MangaDTO;
-        if (group != null)
+        if (manga != null)
         {
            _= mangas.Remove(manga);
+            this.Bindings.Update();
             var count=await client.GetMangasCountAsync(group.Guid);
             numberbox.Maximum = (count + 19) / 20;
 

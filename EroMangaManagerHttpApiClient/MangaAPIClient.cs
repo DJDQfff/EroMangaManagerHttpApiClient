@@ -15,7 +15,7 @@ public class MangaAPIClient
     {
         client = new HttpClient
         {
-            BaseAddress = new Uri("http://192.168.1.2:5000/")
+            BaseAddress = new Uri("http://192.168.2.108:5000/")
         };
     }
 

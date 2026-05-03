@@ -35,11 +35,27 @@
     <UnoFeatures>
         Mvvm;Toolkit;
     </UnoFeatures>
+    <AndroidSigningKeyStore>E:\收藏\DJDQfff For MS Store.pfx</AndroidSigningKeyStore>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\EroMangaManager\EroMangaManager.Core\EroMangaManager.Core.csproj" />
   </ItemGroup>
 
+   <!-- 这个会导致发布失败-->
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(TargetFramework)' == 'net10.0-android'">
+        <EnableLLVM>True</EnableLLVM>
 
+        <AndroidKeyStore>True</AndroidKeyStore>
+        <AndroidSigningAlias>te-810e1cb9-b1a5-44bf-a4f7-362e4d8e5df9</AndroidSigningAlias>
+        <AndroidSigningStorePass>512131415zcb</AndroidSigningStorePass>
+        <AndroidSigningKeyPass>512131415zcb</AndroidSigningKeyPass>
+        <AndroidSigningKeyAlias>te-810e1cb9-b1a5-44bf-a4f7-362e4d8e5df9</AndroidSigningKeyAlias>
+
+    </PropertyGroup>
+
+    <!--    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0-android|AnyCPU'">
+      <AndroidSigningKeyAlias>djdqfff</AndroidSigningKeyAlias>
+    </PropertyGroup>-->
+ 
 </Project>
