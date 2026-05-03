@@ -21,7 +21,7 @@ jobs:
 
       - name: 安装 Uno Platform 工作负载
         run: |
-          dotnet workload install uno
+          dotnet workload install uno-platform
 
       - name: 还原依赖
         run: dotnet restore
