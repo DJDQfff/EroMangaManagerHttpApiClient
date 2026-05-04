@@ -47,12 +47,20 @@ jobs:
         shell: pwsh
         run: |
           $slnxPath = "EroMangaManagerHttpApiClient.slnx"
-          (Get-Content $slnxPath -Raw) -replace '\.\.\\EroMangaManager\\', 'EroMangaManager\' | Set-Content $slnxPath
-          Write-Output "修正后的 slnx 内容:"
+          Write-Output "修正前:"
           Get-Content $slnxPath
+          
+          $content = Get-Content $slnxPath -Raw
+          # 把 ../EroMangaManager 替换为 EroMangaManager（去掉 ../）
+          $content = $content -replace '\.\./EroMangaManager/', 'EroMangaManager/'
+          $content = $content -replace '\.\.\\EroMangaManager\\', 'EroMangaManager\'
+          Set-Content $slnxPath -Value $content
+          
+          Write-Output "修正后:"
+          Get-Content $slnxPath
+          
       - name: 还原依赖
         run: dotnet restore EroMangaManagerHttpApiClient.slnx
-          
       
       - name: 构建 Android APK
         run: |
