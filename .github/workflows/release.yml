@@ -23,15 +23,13 @@ jobs:
         run: |
           dotnet new install Uno.Templates
 
-      - name: 克隆桌面端仓库（获取 Core 项目）
+      - name: 克隆桌面端仓库（获取私有 Core 项目）
         shell: pwsh
         run: |
-          git clone https://github.com/DJDQfff/EroMangaManager.git ./EroMangaManager
-          if (-not (Test-Path "./EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj")) {
-            Write-Error "Core 项目克隆失败或路径不对"
-            exit 1
-          }
-          Write-Output "Core 项目克隆成功"
+          cd ..
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git EroMangaManager
+          Write-Output "克隆完成"
+          Get-ChildItem ../EroMangaManager -Directory | Select-Object Name
           
       - name: 还原依赖
         run: dotnet restore EroMangaManagerHttpApiClient.slnx
