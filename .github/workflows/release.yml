@@ -23,27 +23,26 @@ jobs:
         run: |
           dotnet new install Uno.Templates
 
-      - name: 克隆桌面端仓库（获取私有 Core 项目）
+       - name: 克隆桌面端仓库（获取 Core 项目）
         shell: pwsh
         run: |
-          cd ..
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git EroMangaManager
-          Write-Output "克隆完成"
-          Get-ChildItem ../EroMangaManager -Directory | Select-Object Name
-          
+          # 克隆到临时位置
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git ../EroMangaManager_temp
+          # 强制创建 CI 期望的路径并复制 Core 项目
+          New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaManager.Core"
+          Copy-Item -Path "../EroMangaManager_temp/EroMangaManager.Core/*" -Destination "./EroMangaManager/EroMangaManager.Core/" -Recurse -Force
+          # 验证文件存在
+          if (Test-Path "./EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj") {
+            Write-Output "✅ Core 项目已就位"
+          } else {
+            Write-Error "❌ Core 项目路径仍然不对"
+            exit 1
+          }
+
       - name: 还原依赖
         run: dotnet restore EroMangaManagerHttpApiClient.slnx
-        
-      - name: 修正 .slnx 里的 Core 项目路径
-        shell: pwsh
-        run: |
-          $slnxPath = "EroMangaManagerHttpApiClient.slnx"
-          $content = Get-Content $slnxPath -Raw
-          $newContent = $content -replace '\.\.\\EroMangaManager\\', '../EroMangaManager/'
-          Set-Content $slnxPath -Value $newContent
-          Write-Output "修正后的 slnx 内容:"
-          Get-Content $slnxPath
           
+      
       - name: 构建 Android APK
         run: |
           dotnet publish EroMangaManagerHttpApiClient/EroMangaManagerHttpApiClient.csproj `
