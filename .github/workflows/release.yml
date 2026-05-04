@@ -58,6 +58,22 @@ jobs:
           "@ | Set-Content $slnxPath
           Write-Output "修正后的 slnx:"
           Get-Content $slnxPath
+      
+      - name: 修正 .csproj 项目引用路径
+        shell: pwsh
+        run: |
+          $csprojPath = "EroMangaManagerHttpApiClient/EroMangaManagerHttpApiClient.csproj"
+          Write-Output "修正前:"
+          Get-Content $csprojPath
+          
+          $content = Get-Content $csprojPath -Raw
+          # 替换所有可能指向 Core 的相对路径为 CI 里的实际路径
+          $content = $content -replace '\.\.\\\.\.\\EroMangaManager\\EroMangaManager\.Core\\EroMangaManager\.Core\.csproj', '..\EroMangaManager\EroMangaManager.Core\EroMangaManager.Core.csproj'
+          $content = $content -replace '\.\./\.\./EroMangaManager/EroMangaManager\.Core/EroMangaManager\.Core\.csproj', '../EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj'
+          Set-Content $csprojPath -Value $content
+          
+          Write-Output "修正后:"
+          Get-Content $csprojPath
           
       - name: 还原依赖
         run: dotnet restore EroMangaManagerHttpApiClient.slnx
