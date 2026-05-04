@@ -21,7 +21,7 @@ jobs:
 
       - name: 安装 android workload
         run: |
-          dotnet workload install android
+          dotnet workload install android ios
 
       - name: 克隆桌面端仓库（获取 Core 项目）
         shell: pwsh
@@ -47,16 +47,16 @@ jobs:
         shell: pwsh
         run: |
           $slnxPath = "EroMangaManagerHttpApiClient.slnx"
-          Write-Output "修正前:"
-          Get-Content $slnxPath
-          
-          $content = Get-Content $slnxPath -Raw
-          # 把 ../EroMangaManager 替换为 EroMangaManager（去掉 ../）
-          $content = $content -replace '\.\./EroMangaManager/', 'EroMangaManager/'
-          $content = $content -replace '\.\.\\EroMangaManager\\', 'EroMangaManager\'
-          Set-Content $slnxPath -Value $content
-          
-          Write-Output "修正后:"
+          # 直接写入只包含安卓项目和 Core 项目的 .slnx
+          @"
+          <Solution>
+            <Project Path="EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj" />
+            <Project Path="EroMangaManagerHttpApiClient/EroMangaManagerHttpApiClient.csproj">
+              <Deploy />
+            </Project>
+          </Solution>
+          "@ | Set-Content $slnxPath
+          Write-Output "修正后的 slnx:"
           Get-Content $slnxPath
           
       - name: 还原依赖
