@@ -19,9 +19,9 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: 安装 Uno Platform 模板
+      - name: 安装 android workload
         run: |
-          dotnet new install Uno.Templates
+          dotnet workload install android
 
       - name: 克隆桌面端仓库（获取 Core 项目）
         shell: pwsh
