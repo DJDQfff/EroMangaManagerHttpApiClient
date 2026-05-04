@@ -23,20 +23,25 @@ jobs:
         run: |
           dotnet new install Uno.Templates
 
-       - name: 克隆桌面端仓库（获取 Core 项目）
+      - name: 克隆桌面端仓库（获取 Core 项目）
         shell: pwsh
         run: |
-          # 克隆到临时位置
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git ../EroMangaManager_temp
-          # 强制创建 CI 期望的路径并复制 Core 项目
+          
+          # 确保目标目录存在
           New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaManager.Core"
+          
+          # 直接复制 Core 项目文件到 CI 期望的路径
           Copy-Item -Path "../EroMangaManager_temp/EroMangaManager.Core/*" -Destination "./EroMangaManager/EroMangaManager.Core/" -Recurse -Force
-          # 验证文件存在
+          
+          # 验证文件是否就位
+          Write-Output "Checking for Core project file at expected path:"
           if (Test-Path "./EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj") {
-            Write-Output "✅ Core 项目已就位"
+              Write-Output "✅ Core project file is in place."
           } else {
-            Write-Error "❌ Core 项目路径仍然不对"
-            exit 1
+              Write-Error "❌ Core project file still not found at expected path."
+              Get-ChildItem -Path "./EroMangaManager" -Recurse -Depth 3
+              exit 1
           }
 
       - name: 还原依赖
