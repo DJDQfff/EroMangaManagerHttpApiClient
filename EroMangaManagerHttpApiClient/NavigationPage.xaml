@@ -50,7 +50,7 @@
                                         LargeChange="10"
                                         Minimum="1"
                                         SmallChange="1"
-                                        SpinButtonPlacementMode="Inline"
+                                        SpinButtonPlacementMode="Compact"
                                         ValidationMode="InvalidInputOverwritten"
                                         Value="1" />
 
