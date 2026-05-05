@@ -37,22 +37,23 @@ jobs:
           Copy-Item -Path "../EroMangaManager_temp/EroMangaDatabase/*" -Destination "./EroMangaManager/EroMangaDatabase/" -Recurse -Force
     
           Write-Output "✅ Core 和 Database 项目已就位"
-            - name: 修正 .slnx 路径
-              shell: pwsh
-              run: |
-                $slnxPath = "EroMangaManagerHttpApiClient.slnx"
-                # 直接写入只包含安卓项目和 Core 项目的 .slnx
-                @"
-                <Solution>
-                  <Project Path="EroMangaManager/EroMangaDatabase/EroMangaDatabase.csproj" />
-                  <Project Path="EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj" />
-                  <Project Path="EroMangaManagerHttpApiClient/EroMangaManagerHttpApiClient.csproj">
-                    <Deploy />
-                  </Project>
-                </Solution>
-                "@ | Set-Content $slnxPath
-                Write-Output "修正后的 slnx:"
-                Get-Content $slnxPath
+
+      - name: 修正 .slnx 路径
+        shell: pwsh
+        run: |
+          $slnxPath = "EroMangaManagerHttpApiClient.slnx"
+          # 直接写入只包含安卓项目和 Core 项目的 .slnx
+          @"
+          <Solution>
+            <Project Path="EroMangaManager/EroMangaDatabase/EroMangaDatabase.csproj" />
+            <Project Path="EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj" />
+            <Project Path="EroMangaManagerHttpApiClient/EroMangaManagerHttpApiClient.csproj">
+              <Deploy />
+            </Project>
+          </Solution>
+          "@ | Set-Content $slnxPath
+          Write-Output "修正后的 slnx:"
+          Get-Content $slnxPath
       
       - name: 修正 .csproj 项目引用路径
         shell: pwsh
