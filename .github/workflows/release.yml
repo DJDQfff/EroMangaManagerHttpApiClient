@@ -26,28 +26,35 @@ jobs:
       - name: 克隆桌面端仓库（获取 Core 和 Database 项目）
         shell: pwsh
         run: |
-          # 克隆到仓库根目录同级的临时目录
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git ../EroMangaManager_temp
+          # 明确指定临时目录的绝对路径
+          $tempDir = "${{ github.workspace }}/../EroMangaManager_temp"
+          Write-Output "临时目录: $tempDir"
           
-          # Core 项目
-          New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaManager.Core"
-          Copy-Item -Path "../EroMangaManager_temp/EroMangaManager.Core/*" -Destination "./EroMangaManager/EroMangaManager.Core/" -Recurse -Force
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git $tempDir
           
-          # Database 项目
-          New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaDatabase"
-          Copy-Item -Path "../EroMangaManager_temp/EroMangaDatabase/*" -Destination "./EroMangaManager/EroMangaDatabase/" -Recurse -Force
+          # 列出临时目录的内容，确认结构
+          Write-Output "临时目录内容:"
+          Get-ChildItem $tempDir -Directory | Select-Object Name
+          
+          # 目标目录
+          $targetDir = "${{ github.workspace }}/EroMangaManager"
+          New-Item -ItemType Directory -Force -Path "$targetDir/EroMangaManager.Core"
+          New-Item -ItemType Directory -Force -Path "$targetDir/EroMangaDatabase"
+          
+          # 复制 Core 和 Database
+          Copy-Item -Path "$tempDir/EroMangaManager.Core/*" -Destination "$targetDir/EroMangaManager.Core/" -Recurse -Force
+          Copy-Item -Path "$tempDir/EroMangaDatabase/*" -Destination "$targetDir/EroMangaDatabase/" -Recurse -Force
           
           # 验证
-          if (-not (Test-Path "./EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj")) {
+          if (-not (Test-Path "$targetDir/EroMangaManager.Core/EroMangaManager.Core.csproj")) {
             Write-Error "❌ Core 项目克隆失败"
             exit 1
           }
-          if (-not (Test-Path "./EroMangaManager/EroMangaDatabase/EroMangaDatabase.csproj")) {
+          if (-not (Test-Path "$targetDir/EroMangaDatabase/EroMangaDatabase.csproj")) {
             Write-Error "❌ Database 项目克隆失败"
             exit 1
           }
           Write-Output "✅ Core 和 Database 项目已就位"
-
       - name: 修正 .slnx 路径
         shell: pwsh
         run: |
