@@ -26,16 +26,26 @@ jobs:
       - name: 克隆桌面端仓库（获取 Core 和 Database 项目）
         shell: pwsh
         run: |
+          # 克隆到仓库根目录同级的临时目录
           git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DJDQfff/EroMangaManager.git ../EroMangaManager_temp
-    
+          
           # Core 项目
-           New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaManager.Core"
-            Copy-Item -Path "../EroMangaManager_temp/EroMangaManager.Core/*" -Destination "./EroMangaManager/EroMangaManager.Core/" -Recurse -Force
-    
+          New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaManager.Core"
+          Copy-Item -Path "../EroMangaManager_temp/EroMangaManager.Core/*" -Destination "./EroMangaManager/EroMangaManager.Core/" -Recurse -Force
+          
           # Database 项目
           New-Item -ItemType Directory -Force -Path "./EroMangaManager/EroMangaDatabase"
           Copy-Item -Path "../EroMangaManager_temp/EroMangaDatabase/*" -Destination "./EroMangaManager/EroMangaDatabase/" -Recurse -Force
-    
+          
+          # 验证
+          if (-not (Test-Path "./EroMangaManager/EroMangaManager.Core/EroMangaManager.Core.csproj")) {
+            Write-Error "❌ Core 项目克隆失败"
+            exit 1
+          }
+          if (-not (Test-Path "./EroMangaManager/EroMangaDatabase/EroMangaDatabase.csproj")) {
+            Write-Error "❌ Database 项目克隆失败"
+            exit 1
+          }
           Write-Output "✅ Core 和 Database 项目已就位"
 
       - name: 修正 .slnx 路径
